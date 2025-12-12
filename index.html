@@ -1,651 +1,159 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Nhật ký sinh tồn – Cosmic Full Combo</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dấu Mốc Công Chức – Cosmic Edition</title>
+
 <style>
-  :root{
-    --bg1:#0a0326;
-    --bg2:#1b0838;
-    --card-back:#120521;
-    --accent1:#ff9bff;
-    --accent2:#8be9ff;
-    --glass: rgba(255,255,255,0.06);
-  }
-  html,body{height:100%;margin:0;font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;background: radial-gradient(ellipse at 10% 10%, #1b0638 0%, #070015 40%, #000 100%);color:#fff;}
-  .wrap{
-    max-width:980px;margin:24px auto;padding:22px;position:relative;
-    border-radius:18px;background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-    overflow:hidden;
-  }
-  header{display:flex;gap:16px;align-items:center;}
-  .logo{
-    width:74px;height:74px;border-radius:14px;background:linear-gradient(135deg,#2b0e46,#1a2340);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,0.6);
-    flex:0 0 74px;margin-right:6px;
-  }
-  .logo h2{font-size:18px;margin:0;color:var(--accent1);text-shadow:0 0 8px rgba(255,155,255,0.12);}
-  h1{margin:0;font-size:20px;color:var(--accent1);}
-  p.lead{margin:6px 0 0 0;color:#c9c4df;font-size:13px;}
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", sans-serif;
+        background: radial-gradient(circle at 20% 30%, #2b1e59, #0a0518);
+        color: #fff;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-  .content{display:grid;grid-template-columns: 1fr 380px;gap:18px;margin-top:20px;}
-  /* left panel: timeline */
-  .panel{
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.015));
-    border-radius:12px;padding:16px;min-height:380px;position:relative;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.45);
-  }
-  #milestone-box{font-size:16px;line-height:1.6;min-height:130px;display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);}
-  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center;}
-  .btn{background:linear-gradient(135deg,var(--accent1),#7a6bff);border:none;color:#111;font-weight:700;padding:10px 14px;border-radius:10px;cursor:pointer;box-shadow:0 6px 18px rgba(138,78,255,0.12);transition:transform .14s ease;}
-  .btn.secondary{background:linear-gradient(135deg,#1b6d9b,#5ad1ff);color:#021124;}
-  .btn:active{transform:translateY(2px) scale(.995);}
+    .cosmic-container {
+        width: 90%;
+        max-width: 600px;
+        background: rgba(255, 255, 255, 0.07);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.08);
+        padding: 30px;
+        text-align: center;
+        position: relative;
+    }
 
-  .small{font-size:13px;padding:8px 10px;border-radius:8px;}
-  .muted{color:#bdb4df;font-size:13px;margin-left:auto;}
-  .progress-dots{display:flex;gap:6px;align-items:center;margin-top:12px;justify-content:center;}
-  .dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.06);box-shadow:inset 0 1px rgba(255,255,255,0.02);}
-  .dot.active{background:linear-gradient(90deg,var(--accent1),var(--accent2));box-shadow:0 6px 14px rgba(138,78,255,0.12);transform:scale(1.15);}
+    h1 {
+        font-size: 26px;
+        margin-bottom: 15px;
+        color: #ffd9ff;
+        text-shadow: 0 0 10px #ff9bff;
+    }
 
-  /* right panel: tarot + visualizer */
-  .side{display:flex;flex-direction:column;gap:12px;}
-  .tarot-wrap{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));padding:12px;border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:10px;min-height:300px;}
-  .card-scene{width:260px;height:360px;position:relative;perspective:1200px;}
-  .card{
-    width:240px;height:320px;border-radius:12px;background:linear-gradient(180deg,#12021b,#2f1040);position:absolute;left:10px;top:20px;display:flex;align-items:center;justify-content:center;color:#fff;
-    box-shadow:0 18px 40px rgba(0,0,0,0.5), 0 0 30px rgba(120,60,180,0.06);transform-style:preserve-3d;transition:transform .9s cubic-bezier(.2,.9,.25,1), box-shadow .3s;
-  }
-  .card .front, .card .back{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;}
-  .card .back{transform:rotateY(180deg);background:linear-gradient(135deg,#1a0633,#40084a);color:#ffd9ff;}
-  .card .front{background:linear-gradient(180deg,#0f0520,#2a0835); color:#fff;}
-  .card.flipped{transform:rotateY(180deg);}
+    #milestone-box {
+        font-size: 18px;
+        min-height: 120px;
+        margin: 20px 0;
+        line-height: 1.6;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+    }
 
-  .tarot-title{font-weight:700;color:var(--accent2);font-size:16px;text-align:center;}
-  .tarot-desc{font-size:13px;color:#d9cfe9;text-align:center;padding:6px 8px;}
+    .btn {
+        background: linear-gradient(135deg, #ff75d8, #9e4bff);
+        border: none;
+        padding: 15px 30px;
+        font-size: 18px;
+        color: #fff;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 0 10px #c77dff;
+    }
 
-  .audio-controls{display:flex;gap:8px;align-items:center;width:100%;padding:8px 6px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));}
-  .slider{width:120px;}
-  .visualizer{width:100%;height:80px;background:linear-gradient(180deg,#060313,#12021b);border-radius:8px;overflow:hidden;display:block;}
+    .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 18px #e2b4ff;
+    }
 
-  .footer{display:flex;align-items:center;gap:12px;margin-top:16px;color:#cfc6e6;font-size:13px;}
-  .credits{margin-left:auto;font-size:13px;color:#b7acd6;}
-  /* responsive */
-  @media (max-width:960px){
-    .content{grid-template-columns: 1fr; }
-    .side{order: -1;}
-  }
+    .stars {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .star {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: white;
+        border-radius: 50%;
+        opacity: 0.8;
+        animation: twinkle 2s infinite ease-in-out alternate;
+    }
+
+    @keyframes twinkle {
+        from { opacity: 0.2; transform: scale(0.8); }
+        to   { opacity: 1; transform: scale(1.2); }
+    }
 </style>
 </head>
+
 <body>
-<div class="wrap">
-  <header>
-    <div class="logo"><h2>NHẬT KÝ</h2></div>
-    <div>
-      <h1>Nhật ký sinh tồn của công chức — Cosmic Full Combo</h1>
-      <p class="lead">12 mốc, tarot công chức, nhạc nền tự sinh bằng WebAudio, chế độ auto-play. Copy mở ra xài liền. ✨</p>
-    </div>
-  </header>
+<div class="cosmic-container">
+    <h1>✨ Nhật ký sinh tồn – Cosmic Edition ✨</h1>
 
-  <div class="content">
-    <!-- LEFT: timeline -->
-    <div class="panel">
-      <div id="milestone-box">Nhấn "Hiện mốc tiếp theo" để bắt đầu hành trình sinh tồn ✨</div>
+    <div id="milestone-box"></div>
 
-      <div class="controls">
-        <button class="btn" id="next-btn">Hiện mốc tiếp theo</button>
-        <button class="btn secondary small" id="flip-btn">Lật/Xem bài luôn</button>
+    <button class="btn" id="next-btn">Hiện mốc tiếp theo</button>
 
-        <label class="muted">Auto-play</label>
-        <button class="btn small" id="toggle-auto">Bật</button>
-
-        <label class="muted">Tốc độ</label>
-        <select id="speed-select" class="small">
-          <option value="2000">Nhanh (2s)</option>
-          <option value="3000" selected>Tiêu chuẩn (3s)</option>
-          <option value="5000">Chậm (5s)</option>
-        </select>
-
-      </div>
-
-      <div class="progress-dots" id="dots"></div>
-
-      <div class="footer">
-        <div>Con số hiển thị là random khác nhau cho mỗi user.</div>
-        <div class="credits">✨ Built with synth & JS — Không cần file audio bên ngoài</div>
-      </div>
-    </div>
-
-    <!-- RIGHT: tarot + visualizer -->
-    <div class="side">
-      <div class="tarot-wrap">
-        <div class="card-scene" id="card-scene" aria-hidden="false">
-          <div class="card" id="tarot-card" role="img" aria-label="Tarot card">
-            <!-- Back (when face-down) -->
-            <div class="back">
-              <svg width="100%" height="100%" viewBox="0 0 240 320" preserveAspectRatio="xMidYMid meet">
-                <defs>
-                  <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#1a0633"/><stop offset="1" stop-color="#40084a"/></linearGradient>
-                </defs>
-                <rect x="0" y="0" rx="12" width="240" height="320" fill="url(#g1)"/>
-                <g transform="translate(120,160)">
-                  <circle r="44" fill="rgba(255,255,255,0.06)"/>
-                  <g fill="#ffd9ff" transform="translate(-30,-12) rotate(-8)">
-                    <rect x="0" y="0" rx="4" width="60" height="28" fill="#ff9bff" opacity="0.06"></rect>
-                  </g>
-                  <text x="0" y="68" font-size="14" fill="#ffd9ff" text-anchor="middle" font-family="sans-serif">TAROT</text>
-                </g>
-              </svg>
-            </div>
-            <!-- Front (face-up) -->
-            <div class="front" id="card-front">
-              <!-- dynamic svg goes here via JS -->
-            </div>
-          </div>
-        </div>
-
-        <div class="tarot-title" id="tarot-title">Bấm mốc để rút bài</div>
-        <div class="tarot-desc" id="tarot-desc">Mỗi lá bài là một thông điệp công chức. Lật bài để đọc chi tiết.</div>
-
-        <div style="width:100%;display:flex;gap:8px;align-items:center;">
-          <button class="btn small" id="draw-btn">Rút lá Tarot</button>
-          <button class="btn small" id="shuffle-btn">Shuffle (tạo bài mới)</button>
-          <div style="margin-left:auto;color:#d6cfea;font-size:13px;">Lượt: <span id="count-open">0</span></div>
-        </div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <div class="audio-controls">
-          <button class="btn small" id="play-audio">Play nhạc</button>
-          <button class="btn small" id="stop-audio">Stop</button>
-          <label style="margin-left:8px;color:#cfc6e6;font-size:13px;">Âm lượng</label>
-          <input type="range" id="volume" class="slider" min="0" max="100" value="36">
-          <div style="margin-left:auto;color:#bdb4df;font-size:13px;">Synth ambient — không cần file</div>
-        </div>
-        <canvas id="visual" class="visualizer"></canvas>
-      </div>
-    </div>
-  </div>
+    <div class="stars" id="stars"></div>
 </div>
 
 <script>
-/*
-  Full Combo JS:
-  - Milestones with per-user random numbers (seeded via crypto)
-  - Tarot deck of 12 "cards" (titles + desc + SVG generator)
-  - WebAudio ambient synth + chime for flips + visualizer
-  - Auto-play cycle
-  - All functions fully implemented, no external assets needed
-*/
+    // Tạo random trong khoảng
+    const r = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-/* ----------- Utility: seeded RNG per visitor (so each user sees different numbers) ---------- */
-// Create a deterministic-ish per-page-session RNG using crypto random seed
-function createSeededRng() {
-  // gather some entropy: time + random bytes
-  const seedArr = new Uint32Array(4);
-  crypto.getRandomValues(seedArr);
-  // mix with current time
-  const seed = seedArr[0] ^ seedArr[1] ^ Date.now();
-  // simple xorshift32 PRNG
-  let x = seed >>> 0;
-  return function rand() {
-    // xorshift
-    x ^= x << 13;
-    x ^= x >>> 17;
-    x ^= x << 5;
-    return (x >>> 0) / 0xFFFFFFFF;
-  };
-}
-const rng = createSeededRng();
-const rndInt = (min, max) => Math.floor(rng() * (max - min + 1)) + min;
+    // Dữ liệu các mốc (text + số random)
+    const milestones = [
+        `Tháng 1: Họp đầu năm ${r(30,50)} slide. Đến slide ${r(20,35)} thì linh hồn bắt đầu rời khỏi cơ thể.`,
+        `Tháng 2: Dự tính gom 3 thùng hồ sơ. Thực tế: ${r(6,12)} thùng. Nặng như kỳ vọng KPI năm sau.`,
+        `Tháng 3: Quy trình mới dài ${r(40,80)} trang. Bạn đọc mà cảm giác như xem phim kinh dị rating 18+.`,
+        `Tháng 4: Mất ${r(5,15)} phút tìm ổ cắm và ${r(5,20)} phút tìm chỗ để cây nước. Hỗn loạn vũ trụ.`,
+        `Tháng 5: Biểu mẫu đổi ${r(3,8)} lần trong ${r(10,20)} ngày. File FINAL không bao giờ là final.`,
+        `Tháng 6: Mở phần mềm mới ra ${r(3,6)} cửa sổ lạ như đến từ timeline khác.`,
+        `Tháng 7: Ngăn bàn mới chứa ${r(5,12)} sợi dây điện chồng lên nhau như số phận.`,
+        `Tháng 8: Phần mềm chạy mượt ${r(1,4)} tiếng. Cả phòng đứng hình như gặp sinh vật hiếm.`,
+        `Tháng 9: Xem video ${r(15,25)} phút. Hiểu ${r(50,85)}%. Phần còn lại phó mặc vũ trụ.`,
+        `Tháng 10: Họp xác minh quy trình mất ${r(15,40)} phút vì không biết bản nào là bản mới nhất.`,
+        `Tháng 11: Lục hồ sơ ${r(20,40)} phút. Tìm được tài liệu dày ${r(80,150)} trang phủ bụi thần linh.`,
+        `Tháng 12: Tự hỏi “mình đang làm gì đây?” trung bình ${r(2,5)} lần mỗi tuần.`
+    ];
 
-/* ---------------- Milestones data (12 months) ---------------- */
-const baseMilestones = [
-  (n) => `Tháng 1: Họp đầu năm ${n} slide. Đến slide ${rndInt(20,35)} thì linh hồn muốn đi du lịch.`,
-  (n) => `Tháng 2: Dự tính gom 3 thùng hồ sơ. Thực tế: ${n} thùng - nặng hơn cả ký ức đẹp.`,
-  (n) => `Tháng 3: Quy trình mới dài ${n} trang. Cảm giác như xem phim kinh dị, rating: nghìn bước.`,
-  (n) => `Tháng 4: Mất ${rndInt(5,15)} phút tìm ổ cắm. Đã tìm, không có chỗ, ngồi cạnh cửa sổ.`,
-  (n) => `Tháng 5: Biểu mẫu đổi ${rndInt(3,8)} lần trong ${rndInt(10,20)} ngày. File "FINAL" tồn tại cho vui.`,
-  (n) => `Tháng 6: Mở phần mềm mới, xuất hiện ${rndInt(2,6)} cửa sổ lạ như portal sang timeline khác.`,
-  (n) => `Tháng 7: Ngăn bàn chứa ${rndInt(5,12)} sợi dây điện rối — kho báu hay tử huyệt thì chưa biết.`,
-  (n) => `Tháng 8: Phần mềm chạy mượt ${n} giờ. Cả phòng nhìn như vừa thấy thiên thạch rơi.`,
-  (n) => `Tháng 9: Xem video ${rndInt(15,25)} phút. Hiểu ${rndInt(50,85)}%. Phần còn lại cho số phận.`,
-  (n) => `Tháng 10: Họp xác minh mất ${rndInt(15,40)} phút vì tranh luận về "bản mới nhất".`,
-  (n) => `Tháng 11: Lục hồ sơ ${rndInt(20,40)} phút. Tìm thấy tài liệu ${n} trang phủ bụi thần linh.`,
-  (n) => `Tháng 12: Trung bình tự hỏi "Mình đang làm gì" ${rndInt(2,5)} lần/tuần. Nhưng vẫn còn bánh quy.`
-];
-// initialize numbers unique per user
-const milestoneNumbers = Array.from({length:12}, (_,i) => rndInt(1, (i%2===0)?80:12));
+    let index = 0;
 
-const milestones = baseMilestones.map((fn, i) => fn(milestoneNumbers[i]));
+    const box = document.getElementById("milestone-box");
+    const btn = document.getElementById("next-btn");
 
-/* ----------- DOM elements ---------- */
-const box = document.getElementById('milestone-box');
-const nextBtn = document.getElementById('next-btn');
-const flipBtn = document.getElementById('flip-btn');
-const dotsWrap = document.getElementById('dots');
-const card = document.getElementById('tarot-card');
-const cardFront = document.getElementById('card-front');
-const drawBtn = document.getElementById('draw-btn');
-const shuffleBtn = document.getElementById('shuffle-btn');
-const tarotTitle = document.getElementById('tarot-title');
-const tarotDesc = document.getElementById('tarot-desc');
-const countOpenSpan = document.getElementById('count-open');
-const toggleAutoBtn = document.getElementById('toggle-auto');
-const speedSelect = document.getElementById('speed-select');
-const playAudioBtn = document.getElementById('play-audio');
-const stopAudioBtn = document.getElementById('stop-audio');
-const volumeSlider = document.getElementById('volume');
-const visualCanvas = document.getElementById('visual');
+    btn.addEventListener("click", () => {
+        if (index < milestones.length) {
+            box.style.opacity = 0;
 
-/* ---------- progress dots ---------- */
-function renderDots(){
-  dotsWrap.innerHTML = '';
-  for(let i=0;i<12;i++){
-    const d = document.createElement('div');
-    d.classList.add('dot');
-    dotsWrap.appendChild(d);
-  }
-}
-renderDots();
-function setActiveDot(idx){
-  const dots = dotsWrap.querySelectorAll('.dot');
-  dots.forEach((d,i)=> d.classList.toggle('active', i===idx));
-}
+            setTimeout(() => {
+                box.innerHTML = milestones[index];
+                box.style.opacity = 1;
+                index++;
 
-/* ---------- Tarot deck (12 cards) ---------- */
-const tarotDeck = [
-  {key:'paperwork-star', title:'The Paperwork Star', desc: 'Ngập trong hồ sơ nhưng vẫn tỏa sáng — kiên nhẫn là siêu năng lực.'},
-  {key:'final-form', title:'The Final Form', desc: 'Biểu mẫu không bao giờ thực sự là "final". Chấp nhận thôi!'},
-  {key:'holy-coffee', title:'The Holy Coffee', desc: '+10 tinh thần, +5 sáng mắt. Uống cẩn thận, còn phải họp.'},
-  {key:'lost-plug', title:'The Lost Plug', desc: 'Tìm ổ cắm giống như tìm nguồn sống. Có khi ổ cắm là đáp án.'},
-  {key:'ghost-doc', title:'The Ghost Document', desc: 'Tài liệu 2017 xuất hiện như thể không bao giờ rời đi.'},
-  {key:'portal-software', title:'The Portal Software', desc: 'Một cửa sổ lạ = một cổng sang timeline khác. Nhấn hay không ?'},
-  {key:'cable-tangle', title:'The Cable Tangle', desc: 'Dây điện rối như số phận. Bó lại, đặt tên, và giữ kín.'},
-  {key:'rare-smooth', title:'The Rare Smooth', desc: 'Software mượt 2 tiếng — khoảnh khắc đáng kỷ niệm, hãy nhớ nó.'},
-  {key:'fate-video', title:'The Fate Video', desc: 'Hiểu 70% là tài năng. 30% còn lại là nghệ thuật giả vờ.'},
-  {key:'version-mystery', title:'The Version Mystery', desc: 'Bản mới nhất? Hay chỉ là một phiên bản khác? Cuộc đời toàn hỏi vậy.'},
-  {key:'dusty-tome', title:'The Dusty Tome', desc: 'Tài liệu dày, phủ bụi — đầy bí ẩn, đầy cơ may khai phá.'},
-  {key:'cookie-hope', title:'The Cookie Hope', desc: 'Bánh quy đầy → niềm tin đầy. Giữ an toàn cho bánh quy.'}
-];
+                if (index === milestones.length) {
+                    btn.innerText = "Hết rồi – bạn đã sống sót ✨";
+                }
+            }, 300);
+        }
+    });
 
-// function to generate an SVG front for a given tarot card (color variations)
-function svgForCard(cardObj){
-  // use deterministic-ish colors from key
-  const hash = [...cardObj.key].reduce((s,c)=> (s*31 + c.charCodeAt(0))|0, 7) >>> 0;
-  const h1 = (hash % 360);
-  const h2 = (h1 + 60) % 360;
-  const g1 = `linearGradient${h1}`;
-  const svg = `
-    <svg width="100%" height="100%" viewBox="0 0 240 320" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="${g1}" x1="0" x2="1">
-          <stop offset="0" stop-color="hsl(${h1} 80% 50%)"/>
-          <stop offset="1" stop-color="hsl(${h2} 70% 35%)"/>
-        </linearGradient>
-      </defs>
-      <rect x="0" y="0" rx="12" width="240" height="320" fill="url(#${g1})" opacity="0.95"/>
-      <g transform="translate(120,80)">
-        <g fill="rgba(255,255,255,0.12)">
-          <circle r="36" />
-        </g>
-        <g transform="translate(0,0)" fill="#fff" opacity="0.92">
-          <text x="0" y="8" font-size="16" text-anchor="middle" font-weight="700" font-family="sans-serif" fill="#fff">${cardObj.title}</text>
-        </g>
-      </g>
-      <g transform="translate(14,190)">
-        <text x="0" y="0" font-size="12" fill="rgba(255,255,255,0.92)" font-family="sans-serif">${cardObj.desc.slice(0,48)}${cardObj.desc.length>48?'...':''}</text>
-      </g>
-    </svg>
-  `;
-  return svg;
-}
-
-/* ---------- WebAudio synth & chime & visualizer ---------- */
-let audioCtx = null;
-let masterGain = null;
-let ambientNodes = [];
-let analyser = null;
-let visualizerId = null;
-let isPlaying = false;
-
-function initAudio(){
-  if(audioCtx) return;
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  masterGain = audioCtx.createGain();
-  masterGain.gain.value = volumeSlider.value / 100;
-  masterGain.connect(audioCtx.destination);
-
-  // create analyser
-  analyser = audioCtx.createAnalyser();
-  analyser.fftSize = 2048;
-  analyser.smoothingTimeConstant = 0.8;
-  analyser.connect(masterGain);
-
-  // ambient: multiple oscillators with slow LFO on detune + filter + reverb-like delay
-  // oscillator 1: pad
-  const osc1 = audioCtx.createOscillator();
-  osc1.type = 'sine';
-  osc1.frequency.value = 110; // base
-  const osc1Gain = audioCtx.createGain(); osc1Gain.gain.value = 0.02;
-  osc1.connect(osc1Gain);
-
-  // oscillator 2: triangle for richness
-  const osc2 = audioCtx.createOscillator();
-  osc2.type = 'triangle';
-  osc2.frequency.value = 220;
-  const osc2Gain = audioCtx.createGain(); osc2Gain.gain.value = 0.015;
-  osc2.connect(osc2Gain);
-
-  // filter
-  const lp = audioCtx.createBiquadFilter();
-  lp.type = 'lowpass';
-  lp.frequency.value = 900;
-
-  // gentle delay as reverb-ish
-  const delay = audioCtx.createDelay(); delay.delayTime.value = 0.6;
-  const fb = audioCtx.createGain(); fb.gain.value = 0.18;
-  delay.connect(fb); fb.connect(delay);
-
-  // mix to analyser
-  const merger = audioCtx.createGain();
-
-  osc1Gain.connect(merger);
-  osc2Gain.connect(merger);
-  merger.connect(lp);
-  lp.connect(delay);
-  // create a subtle noise layer
-  const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 2, audioCtx.sampleRate);
-  const data = noiseBuffer.getChannelData(0);
-  for(let i=0;i<data.length;i++) data[i] = (Math.random()*2-1) * 0.003;
-  const noiseSrc = audioCtx.createBufferSource();
-  noiseSrc.buffer = noiseBuffer;
-  noiseSrc.loop = true;
-  const noiseGain = audioCtx.createGain(); noiseGain.gain.value = 0.004;
-  noiseSrc.connect(noiseGain);
-  noiseGain.connect(merger);
-
-  // connect chain
-  delay.connect(analyser);
-  lp.connect(analyser);
-  // start nodes
-  osc1.start();
-  osc2.start();
-  noiseSrc.start();
-
-  // LFOs: slowly modulate frequency slightly to feel wide
-  const lfo = audioCtx.createOscillator();
-  lfo.type = 'sine'; lfo.frequency.value = 0.07; // very slow
-  const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 6; // detune cents-ish (we'll mod freq)
-  lfo.connect(lfoGain);
-  // modulate osc1 frequency
-  lfoGain.connect(osc1.frequency);
-
-  // save nodes for control & stop
-  ambientNodes.push(osc1, osc2, noiseSrc, lfo, osc1Gain, osc2Gain, lp, delay, fb, merger, noiseGain);
-}
-
-function playAmbient(){
-  if(!audioCtx) initAudio();
-  if(audioCtx.state === 'suspended') audioCtx.resume();
-  isPlaying = true;
-  // smooth ramp
-  masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-  masterGain.gain.setValueAtTime(masterGain.gain.value, audioCtx.currentTime);
-  masterGain.gain.linearRampToValueAtTime(volumeSlider.value/100, audioCtx.currentTime + 0.6);
-  startVisualizer();
-}
-
-function stopAmbient(){
-  if(!audioCtx) return;
-  isPlaying = false;
-  masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-  masterGain.gain.setValueAtTime(masterGain.gain.value, audioCtx.currentTime);
-  masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.8);
-  stopVisualizer();
-}
-
-/* chime sound for flips (short) */
-function playChime(){
-  if(!audioCtx) initAudio();
-  const t = audioCtx.currentTime;
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  o.type = 'sine';
-  o.frequency.setValueAtTime(880 + Math.random()*120, t);
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(0.06, t+0.02);
-  g.gain.exponentialRampToValueAtTime(0.0001, t+1.4);
-  o.connect(g); g.connect(analyser);
-  o.start(t);
-  o.stop(t+1.5);
-}
-
-/* visualizer */
-const canvas = visualCanvas;
-const ctx = canvas.getContext('2d');
-function resizeCanvas(){
-  canvas.width = canvas.clientWidth * devicePixelRatio;
-  canvas.height = canvas.clientHeight * devicePixelRatio;
-  ctx.scale(devicePixelRatio, devicePixelRatio);
-}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
-function startVisualizer(){
-  if(!analyser) return;
-  cancelAnimationFrame(visualizerId);
-  const bufferLength = analyser.frequencyBinCount;
-  const dataArray = new Uint8Array(bufferLength);
-
-  function draw(){
-    visualizerId = requestAnimationFrame(draw);
-    analyser.getByteFrequencyData(dataArray);
-
-    // clear
-    ctx.clearRect(0,0,canvas.clientWidth, canvas.clientHeight);
-    // background gradient
-    const grad = ctx.createLinearGradient(0,0,canvas.clientWidth,0);
-    grad.addColorStop(0,'rgba(138,78,255,0.08)');
-    grad.addColorStop(0.5, 'rgba(139,233,255,0.06)');
-    grad.addColorStop(1, 'rgba(255,155,255,0.04)');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0,0,canvas.clientWidth, canvas.clientHeight);
-
-    // bars
-    const barWidth = canvas.clientWidth / 40;
-    let x = (canvas.clientWidth - barWidth*40)/2;
-    for(let i=0;i<40;i++){
-      const value = dataArray[i*2] / 255;
-      const barHeight = value * canvas.clientHeight * 0.9;
-      ctx.fillStyle = `rgba(255,255,255,${0.08 + value*0.6})`;
-      roundRect(ctx, x, canvas.clientHeight - barHeight - 6, barWidth*0.8, barHeight, 4, true, false);
-      x += barWidth;
+    // Tạo sao lấp lánh ngẫu nhiên
+    const starContainer = document.getElementById("stars");
+    for (let i = 0; i < 90; i++) {
+        const star = document.createElement("div");
+        star.classList.add("star");
+        star.style.top = Math.random() * 100 + "%";
+        star.style.left = Math.random() * 100 + "%";
+        star.style.animationDelay = Math.random() * 2 + "s";
+        starContainer.appendChild(star);
     }
-  }
-  draw();
-}
-function stopVisualizer(){
-  cancelAnimationFrame(visualizerId);
-  // clear small
-  ctx.clearRect(0,0,canvas.clientWidth, canvas.clientHeight);
-  ctx.fillStyle = 'linear-gradient(0, #000, #111)';
-}
-
-/* helper: rounded rect */
-function roundRect(ctx, x, y, w, h, r, fill, stroke){
-  if (typeof r === 'undefined') r = 5;
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-  if (fill) ctx.fill();
-  if (stroke) ctx.stroke();
-}
-
-/* volume control */
-volumeSlider.addEventListener('input', ()=>{
-  if(masterGain) masterGain.gain.value = volumeSlider.value / 100;
-});
-
-/* ---------- Tarot interactions ---------- */
-let currentIndex = 0;
-let hasFlipped = false;
-let openCount = 0;
-function showMilestone(idx){
-  if(idx < 0 || idx >= milestones.length) return;
-  box.style.opacity = 0;
-  setTimeout(()=>{
-    box.innerText = milestones[idx];
-    box.style.opacity = 1;
-  }, 220);
-  setActiveDot(idx);
-}
-nextBtn.addEventListener('click', ()=>{
-  if(currentIndex >= milestones.length){
-    // reset to start
-    currentIndex = 0;
-    showMilestone(currentIndex);
-    // shuffle the numbers for fun
-    // (we maintain overall seeded RNG for session)
-  } else {
-    showMilestone(currentIndex);
-    // when clicking milestone, also draw tarot & chime
-    drawTarotFor(indexToCard(currentIndex));
-    playChime();
-    // flip card to reveal
-    flipCard(true);
-    incrementOpen();
-    currentIndex++;
-    if(currentIndex >= milestones.length){
-      nextBtn.innerText = "Hết rồi – bạn đã sống sót ✨";
-    }
-  }
-});
-
-flipBtn.addEventListener('click', ()=>{
-  flipCard();
-  playChime();
-});
-
-function indexToCard(idx){
-  // map months to tarot indices (simple rotation)
-  return idx % tarotDeck.length;
-}
-
-/* draw tarot for a given id (0..11) */
-function drawTarotFor(i){
-  const t = tarotDeck[i];
-  // set front svg
-  cardFront.innerHTML = svgForCard(t);
-  tarotTitle.innerText = t.title;
-  tarotDesc.innerText = t.desc;
-}
-
-/* flip card */
-function flipCard(forceOpen=false){
-  if(forceOpen){
-    card.classList.add('flipped');
-    hasFlipped = true;
-  } else {
-    card.classList.toggle('flipped');
-    hasFlipped = card.classList.contains('flipped');
-  }
-}
-
-/* draw random tarot (user can shuffle deck) */
-function drawRandomTarot(){
-  const i = Math.floor(rng()*tarotDeck.length);
-  drawTarotFor(i);
-  // flip to show
-  card.classList.add('flipped');
-  incrementOpen();
-  playChime();
-}
-drawBtn.addEventListener('click', drawRandomTarot);
-
-/* shuffle: re-order tarot deck using rng */
-shuffleBtn.addEventListener('click', ()=>{
-  // simple Fisher-Yates with our rng
-  for(let i=tarotDeck.length-1;i>0;i--){
-    const j = Math.floor(rng()*(i+1));
-    [tarotDeck[i], tarotDeck[j]] = [tarotDeck[j], tarotDeck[i]];
-  }
-  tarotTitle.innerText = 'Deck Đã Shuffle';
-  tarotDesc.innerText = 'Bộ bài đã được xáo trộn — mỗi lần rút là một kịch bản mới.';
-});
-
-/* open counter */
-function incrementOpen(){
-  openCount++;
-  countOpenSpan.innerText = openCount;
-}
-
-/* ---------- Auto-play logic ---------- */
-let autoPlay = false;
-let autoTimer = null;
-toggleAutoBtn.addEventListener('click', ()=>{
-  setAuto(!autoPlay);
-});
-function setAuto(on){
-  autoPlay = on;
-  toggleAutoBtn.innerText = on ? 'Tắt' : 'Bật';
-  if(on){
-    // begin cycle
-    if(autoTimer) clearInterval(autoTimer);
-    autoTimer = setInterval(()=>{
-      // if exhausted, stop
-      if(currentIndex >= milestones.length){
-        setAuto(false);
-        return;
-      }
-      nextBtn.click();
-    }, parseInt(speedSelect.value,10));
-  } else {
-    if(autoTimer) { clearInterval(autoTimer); autoTimer = null; }
-  }
-}
-speedSelect.addEventListener('change', ()=>{
-  if(autoPlay){
-    setAuto(false);
-    setTimeout(()=> setAuto(true), 240);
-  }
-});
-
-/* ---------- Audio controls ---------- */
-playAudioBtn.addEventListener('click', ()=>{
-  playAmbient();
-});
-stopAudioBtn.addEventListener('click', ()=>{
-  stopAmbient();
-});
-
-/* ---------- small UX: clicking card area flips ---------- */
-document.getElementById('card-scene').addEventListener('click', ()=>{
-  flipCard();
-  playChime();
-});
-
-/* ---------- init: render initial things ---------- */
-(function init(){
-  // set dots
-  renderDots();
-  setActiveDot(-1);
-
-  // set an initial random milestone phrase (but do not advance)
-  box.innerText = 'Nhấn "Hiện mốc tiếp theo" để bắt đầu hành trình…';
-  // prepare first tarot face (back shown by default)
-  drawTarotFor(0);
-  card.classList.remove('flipped');
-  // visual placeholder
-  ctx.fillStyle = 'rgba(255,255,255,0.02)';
-  roundRect(ctx, 0, 0, canvas.clientWidth, canvas.clientHeight, 8, true, false);
-
-  // autoplay ambient faintly on load? NO — wait user to press Play
-})();
 </script>
 </body>
 </html>
